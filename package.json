@@ -1,0 +1,27 @@
+{
+  "name": "react-native-init-script",
+  "description": "This script automates the process of creating a new React Native project. It allows you to select various project configurations",
+  "version": "1.0.0",
+  "main": "index.js",
+  "bin": {
+    "react-native-init": "./bin/react-native-init.sh"
+  },
+  "keywords": [
+    "react-native",
+    "script",
+    "optimization",
+    "init",
+    "initializer",
+    "ios",
+    "android",
+    "native"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/itorron99/react-native-init-script"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "react-native-init-script": "^1.0.0"
+  }
+}
