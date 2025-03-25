@@ -5,7 +5,7 @@
     "name": "itorron99",
     "url": "https://github.com/itorron99"
   },
-  "version": "1.0.1",
+  "version": "1.0.2",
   "main": "index.js",
   "bin": {
     "react-native-init-script": "./react-native-init-script.sh"
