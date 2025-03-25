@@ -1,10 +1,17 @@
 {
   "name": "react-native-init-script",
   "description": "This script automates the process of creating a new React Native project. It allows you to select various project configurations",
+  "author": {
+    "name": "itorron99",
+    "url": "https://github.com/itorron99"
+  },
   "version": "1.0.1",
   "main": "index.js",
   "bin": {
-    "react-native-init-script": "./bin/react-native-init-script.sh"
+    "react-native-init-script": "./react-native-init-script.sh"
+  },
+  "scripts": {
+    "start": "./react-native-init-script.sh"
   },
   "keywords": [
     "react-native",
