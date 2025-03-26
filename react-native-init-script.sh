@@ -157,13 +157,26 @@ if [[ "$USE_TS" == "y" ]]; then
   cat > tsconfig.json <<EOL
 {
   "compilerOptions": {
-    "target": "esnext",
-    "moduleResolution": "node",
     "strict": true,
+    "target": "ES6",
+    "module": "commonjs",
+    "moduleResolution": "Node",
     "jsx": "react-native",
-    "skipLibCheck": true
-  }
+    "lib": ["dom", "esnext"],
+    "noEmit": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "baseUrl": ".",
+    "paths": {
+      "@*": ["./src/*"],
+      "@assets/*": ["./assets/*"]
+    }
+  },
+  "include": ["**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules"]
 }
+
 EOL
   echo "📦 Installing TypeScript dependencies..."
   $DEV_INSTALL_CMD typescript @types/react @types/react-native || { echo "❌ Failed to install TypeScript dependencies"; sleep 50; exit 1; }
@@ -181,26 +194,69 @@ fi
 
 # Install ESLint, Prettier, Jest, Husky, Import Sorting
 echo "📦 Installing ESLint, Prettier, Jest, Husky & Import Sorting..."
-$DEV_INSTALL_CMD eslint prettier eslint-config-prettier eslint-plugin-prettier jest @testing-library/react-native @types/jest husky lint-staged eslint-plugin-import eslint-plugin-unused-imports || { echo "❌ Failed to install dependencies"; sleep 50; exit 1; }
+$DEV_INSTALL_CMD eslint prettier eslint-config-prettier eslint-plugin-prettier jest typescript-eslint @testing-library/react-native @types/jest husky lint-staged eslint-plugin-import eslint-plugin-unused-imports @eslint/compat @eslint/js || { echo "❌ Failed to install dependencies"; sleep 50; exit 1; }
 
 # Configure ESLint
-cat > .eslintrc.json <<EOL
-{
-  "extends": ["eslint:recommended", "plugin:react/recommended", "plugin:prettier/recommended"],
-  "plugins": ["react", "prettier", "import", "unused-imports"],
-  "rules": {
-    "prettier/prettier": "error",
-    "import/order": [
-      "error",
-      {
-        "groups": ["builtin", "external", "internal", "parent", "sibling", "index"],
-        "newlines-between": "always"
-      }
-    ],
-    "unused-imports/no-unused-imports": "error",
-    "no-unused-vars": ["warn"]
-  }
-}
+cat > eslint.config.mjs <<EOL
+import { fixupPluginRules } from '@eslint/compat';
+import pluginJs from '@eslint/js';
+import _import from 'eslint-plugin-import';
+import pluginReact from 'eslint-plugin-react';
+import unusedImports from 'eslint-plugin-unused-imports';
+import globals from 'globals';
+import tseslint from 'typescript-eslint';
+
+/** @type {import('eslint').Linter.Config[]} */
+export default [
+  {
+    files: ['**/*.{js,mjs,cjs,ts,jsx,tsx}'],
+  },
+  pluginJs.configs.recommended,
+  ...tseslint.configs.recommended,
+  pluginReact.configs.flat.recommended,
+  {
+    plugins: {
+      import: fixupPluginRules(_import),
+      'unused-imports': unusedImports,
+    },
+    languageOptions: { globals: globals.node },
+    rules: {
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        {
+          argsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+          destructuredArrayIgnorePattern: '^_',
+        },
+      ],
+      'import/order': [
+        'error',
+        {
+          groups: ['builtin', 'external', 'internal', 'parent'],
+          pathGroups: [
+            {
+              pattern: 'react',
+              group: 'external',
+              position: 'before',
+            },
+            {
+              pattern: 'react-native',
+              group: 'external',
+              position: 'before',
+            },
+          ],
+          pathGroupsExcludedImportTypes: ['builtin'],
+          'newlines-between': 'always',
+          alphabetize: {
+            order: 'asc',
+            caseInsensitive: true,
+          },
+        },
+      ],
+    },
+  },
+];
 EOL
 
 # Configure Prettier
@@ -293,6 +349,12 @@ if [[ "$SETUP_ENV" == "y" ]]; then
 API_URL=https://example.com
 EOL
 fi
+
+mkdir -p src/app
+mkdir -p src/components
+mkdir -p src/hooks
+mkdir -p src/services
+mkdir -p src/themes
 
 echo "✅ Project $PROJECT_NAME successfully created with:"
 echo "✅ React Native version: $RN_VERSION"
