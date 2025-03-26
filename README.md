@@ -25,12 +25,12 @@ Ensure that the following tools are installed on your system:
 
 ### How to Use
 
-1. Clone or download the script to your local machine.
+1. Clone or download the script to your local machine (npm i -g react-native-init-script).
 2. Open a terminal or command prompt in the directory where the script is located.
 3. Run the script with:
 
    ```bash
-   ./react-native-init.sh
+   ./react-native-init-script.sh
    ```
 
 ### MIT License
